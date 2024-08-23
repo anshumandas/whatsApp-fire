@@ -17,7 +17,11 @@ This also saves the messages in **Firestore** in the follwoing manner:
 * Each user can have multiple conversations (done in same or different days). Only one conversation can be active at a time.
 * The bot closes a conversation when it gets confirmation of closure of user query. If confirmation is seeked but not given, it will ask again if a new conversation is initiated in the same session. If a new session gets created, old session may remain with one active conversation, which is infact closed.
 * Each *conversation* can have several messages added as per their timestamp
-* Each message can have a response added once response generated
+* Each message can have a response added once response generated via
+  * DialogFlow
+  * RASA
+  * LangChain
+  * Embedded NLP (like https://github.com/axa-group/nlp.js)
 
 **Behaviour**
 
@@ -25,9 +29,9 @@ This also saves the messages in **Firestore** in the follwoing manner:
 * A separate thread can create summary of the *conversation*. This can be triggered and added when a conversation is closed.
 * Individual messages could be truncated or archived as a separate EOD job or on session closure via a separate thread
 * Each *conversation* summarization can lead to some customer insights that can be added to the user level. E.g. we can add the last *conversation* finish timestamp.
-* If the user does not have any previous sessions, then state is new, and we send a welcome message on first interaction of a session
+* If the user does not have any previous *conversation*, then state is new, and we send a welcome message on first interaction of a session
 * If the user does have previous sessions, we send a "Welcom Back" or "How are you doing today" based on the last interaction date
-* Closure of a conversation is done by a standard closure template
+* Closure of a *conversation* is done by a standard closure template
 
 **Steps**
 
@@ -37,6 +41,9 @@ This also saves the messages in **Firestore** in the follwoing manner:
    * Use Emulator
    * Use Ngrok to tunnel webhook to localhost - https://dev.to/ibrarturi/how-to-test-webhooks-on-your-localhost-3b4f
 4. Add Firestore and follow https://firebase.google.com/docs/functions/get-started
+5. Add Dialogflow
+   * Create Dialogflow project, Intents etc. https://cloud.google.com/dialogflow/es/docs/quick/setup
+   * Enable API for Dialogflow and Firebase projects from each of their settings
 
 **Run using Emulator**
 
@@ -66,8 +73,8 @@ This also saves the messages in **Firestore** in the follwoing manner:
 **Future Work**
 
 1. Integrate with
-   * DialogFlow or RASA end to end flow
-   * RASA DIET Intent Classifier only
+   * RASA for end to end flow or DIET Intent Classifier only
+   * Langchain and use RAG https://medium.com/@talon8080/mastering-rag-chatbots-building-advanced-rag-as-a-conversational-ai-tool-with-langchain-d740493ff328
 2. Use personal number instead of business account by leveraging https://github.com/pedroslopez/whatsapp-web.js
 3. Convert to Typescript
    * Take inspiration from https://gist.github.com/jakebloom/2d8468229eb40b99b72e039fd2150831
