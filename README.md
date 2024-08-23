@@ -68,7 +68,8 @@ This also saves the messages in **Firestore** in the follwoing manner:
 1. Integrate with
    * DialogFlow or RASA end to end flow
    * RASA DIET Intent Classifier only
-2. Convert to Typescript
+2. Use personal number instead of business account by leveraging https://github.com/pedroslopez/whatsapp-web.js
+3. Convert to Typescript
    * Take inspiration from https://gist.github.com/jakebloom/2d8468229eb40b99b72e039fd2150831
    * We can use https://github.com/Secreto31126/whatsapp-api-js for Typescript library to call WhatsApp Business API in a more structural manner.
    * WhatsApp's own SDK https://github.com/WhatsApp/WhatsApp-Nodejs-SDK is archived
