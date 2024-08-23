@@ -45,8 +45,7 @@ app.post("/", async (request, response) => {
     const array = request.body.entry;
     for (let i = 0; i < array.length; i++) {
       const body = array[i];
-      const businessAccId = body.id;
-      logger.log("webhook", `Incoming webhook ${businessAccId} with ${JSON.stringify(body)}`);
+      logger.log("Incoming webhook", body);
 
       const changes = body.changes;
 
