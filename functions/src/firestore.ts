@@ -6,19 +6,19 @@
 
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
 require("firebase-functions/logger/compat");
-const {logger} = require("firebase-functions");
-const {onDocumentCreated} = require("firebase-functions/v2/firestore");
-const {getFirestore} = require("firebase-admin/firestore");
+import { logger } from "firebase-functions";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { getFirestore } from "firebase-admin/firestore";
 
 // The Firebase Admin SDK to access Firestore.
-const actions = require("./actions");
-const nlp = require("./nlp");
+import actions from "./actions";
+import nlp from "./nlp";
 
 // Listens for new messages added to DB using onDocumentCreated and then initiate next steps such as response
 // This ensures data gets added to DB before any other action
 // Send back a message that we've successfully written the message
 
-exports.onConversationCreated = onDocumentCreated("/phones/{mobile}/users/{name}/conversations/{convId}", async (event) => {
+exports.onConversationCreated = onDocumentCreated("/phones/{mobile}/users/{name}/conversations/{convId}", async (event:any) => {
   const isNew = event.data.data().newUser;
   const cid = event.params.convId;
   const mid = event.params.messageId;
@@ -35,7 +35,7 @@ exports.onConversationCreated = onDocumentCreated("/phones/{mobile}/users/{name}
   }
 });
 
-exports.onMessageCreated = onDocumentCreated("/phones/{mobile}/users/{name}/conversations/{convId}/messages/{messageId}", (event) => {
+exports.onMessageCreated = onDocumentCreated("/phones/{mobile}/users/{name}/conversations/{convId}/messages/{messageId}", (event:any) => {
   const newConversation = event.data.data().newConv;
   const message = event.data.data().data;
   const cid = event.params.convId;
@@ -44,11 +44,11 @@ exports.onMessageCreated = onDocumentCreated("/phones/{mobile}/users/{name}/conv
   return nlp.processor(message, mobile, name, cid, newConversation, event.data.ref);
 });
 
-exports.saveResponse = function(msg) {
+exports.saveResponse = function(msg:any) {
   getFirestore().collection("phones").doc(msg.recipient_id).collection("responses").doc(msg.id).set({status: msg.status}, {merge: true});
 };
 
-exports.addMessage = async function(message, senderName) {
+exports.addMessage = async function(message: { from: string; timestamp: number; text: { body: string; }; }, senderName: string) {
   const user = getFirestore().collection("phones").doc(message.from).collection("users").doc(senderName);
   const u = await user.get();
   const isNew = !u.exists;
@@ -57,7 +57,7 @@ exports.addMessage = async function(message, senderName) {
     user.set({created});
   }
   const convs = user.collection("conversations");
-  let conv = await convs.where("active", "==", true).get();
+  let conv:any = await convs.where("active", "==", true).get();
   const convStart = conv.empty;
   if (convStart) {
     conv = await convs.add({active: true, newUser: isNew});
@@ -68,12 +68,15 @@ exports.addMessage = async function(message, senderName) {
   await doc.set({data: message.text.body, newConv: convStart});
 };
 
-exports.getContexts = async function(mobile, name, sessionId) {
-  return await getFirestore().collection("phones").doc(mobile).collection("users").
-      doc(name).collection("conversations").doc(sessionId).get().context;
+exports.getContexts = async function(phone: number, name: string, sessionId: string) {
+  const ret:any = await getFirestore().collection("phones").doc(""+phone).collection("users").
+      doc(name).collection("conversations").doc(sessionId).get();
+  return ret.context;
 };
 
-exports.addContext = async function(mobile, name, sessionId, context) {
-  await getFirestore().collection("phones").doc(mobile).collection("users").
+exports.addContext = async function(phone: number, name: string, sessionId: string, context: [any]) {
+  await getFirestore().collection("phones").doc(""+phone).collection("users").
       doc(name).collection("conversations").doc(sessionId).set({context}, {merge: true});
 };
+
+export default exports

@@ -1,29 +1,38 @@
 {
-  "name": "functions",
-  "description": "Cloud Functions for Firebase",
+  "main": "lib/index.js",
   "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "lint": "eslint .",
     "serve": "firebase emulators:start --only functions,firestore",
     "shell": "firebase functions:shell",
-    "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
   "engines": {
     "node": "18"
   },
-  "main": "index.js",
   "dependencies": {
+    "@genkit-ai/ai": "^0.5.10",
+    "@genkit-ai/core": "^0.5.10",
+    "@genkit-ai/dotprompt": "^0.5.10",
+    "@genkit-ai/firebase": "^0.5.10",
+    "@genkit-ai/flow": "^0.5.10",
     "@google-cloud/dialogflow": "^6.8.0",
     "axios": "^1.7.5",
     "express": "^4.19.2",
     "firebase-admin": "^12.1.0",
-    "firebase-functions": "^5.0.0"
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "eslint": "^8.15.0",
     "eslint-config-google": "^0.14.0",
-    "firebase-functions-test": "^3.1.0"
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^5.5.4"
   },
   "private": true
 }

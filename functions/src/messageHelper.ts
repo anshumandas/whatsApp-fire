@@ -2,9 +2,9 @@
 /* eslint-disable require-jsdoc */
 "use strict";
 
-const axios = require("axios");
+import axios from "axios";
 
-function sendMessage(data) {
+export function sendMessage(data: any) {
   const config = {
     method: "post",
     url: `https://graph.facebook.com/${process.env.VERSION}/${process.env.PHONE_NUMBER_ID}/messages`,
@@ -18,7 +18,7 @@ function sendMessage(data) {
   return axios(config);
 }
 
-function getTemplateMessageInput(recipient, template) {
+export function getTemplateMessageInput(recipient: any, template: any) {
   return JSON.stringify({
     "messaging_product": "whatsapp",
     // "preview_url": false,
@@ -34,7 +34,7 @@ function getTemplateMessageInput(recipient, template) {
   });
 }
 // https://developers.facebook.com/docs/whatsapp/cloud-api/messages/text-messages
-function getTextMessageInput(recipient, text, enableLink) {
+export function getTextMessageInput(recipient: number, text: string, enableLink: boolean = false) {
   return JSON.stringify({
     "messaging_product": "whatsapp",
     // "preview_url": false,
@@ -47,9 +47,3 @@ function getTextMessageInput(recipient, text, enableLink) {
     },
   });
 }
-
-module.exports = {
-  sendMessage: sendMessage,
-  getTemplateMessageInput: getTemplateMessageInput,
-  getTextMessageInput: getTextMessageInput,
-};

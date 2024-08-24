@@ -1,10 +1,10 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable require-jsdoc */
 /* eslint-disable max-len */
-const actions = require("./actions");
-const dialogflow = require("./dialogflow");
+import actions from "./actions";
+import dialogflow from "./dialogflow";
 
-async function processor(message, mobile, name, session, newConversation, dataRef) {
+export async function processor(message: string, mobile: number, name: string, session: string, newConversation: boolean, dataRef: any) {
   let fulfillmentText;
   if (process.env.NLU == "DialogFlow") {
     // Note that all interactions can be logged in Dialogflow as well, so the firestore may not be needed
@@ -31,15 +31,15 @@ async function processor(message, mobile, name, session, newConversation, dataRe
   return fulfiller(mobile, fulfillmentText, dataRef);
 }
 
-async function fulfiller(mobile, fulfillmentText, dataRef) {
+async function fulfiller(mobile: any, fulfillmentText: any, dataRef: { set: (arg0: { response: any; }, arg1: { merge: boolean; }) => any; }) {
   const ref = await actions.respond(mobile, fulfillmentText);
   return dataRef.set({response: ref}, {merge: true});
 }
 
-function classifyIntent(message) {
+function classifyIntent(message: string) {
   // this can use RASA or any other classifier
   if (["hi", "hello"].indexOf(message.toLowerCase()) > -1) return "greeting";
   return "unknown";
 }
 
-exports.processor = processor;
+export default {processor}
