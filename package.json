@@ -6,7 +6,6 @@
     "start": "node --env-file=./functions/.env ./bin/www"
   },
   "dependencies": {
-    "@google-cloud/dialogflow": "^6.8.0",
     "axios": "^1.7.4",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
