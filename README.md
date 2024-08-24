@@ -4,17 +4,29 @@ Simple WhatsApp Business API integration with intent classifiers like DialogFlow
 
 In my web search, did not get any easy steps to integrate WhatsApp Business API with DialogFlow. Many sites mentioned a third-party integration like Twilio.
 
-However, using Firebase Functions to run webhooks that WhatsApp calls and using it to call services such as DialogFLow seemed to be a simpler solution. 
+However, using Firebase Functions to run webhooks that WhatsApp calls and using it to call services such as DialogFLow seemed to be a simpler solution.
 
 Used the following for inspiration and guidance:
 
-* https://developers.facebook.com/blog/post/2022/10/31/sending-messages-with-whatsapp-in-your-nodejs-application/
-* https://developers.facebook.com/docs/whatsapp/sample-app-endpoints
-* https://medium.com/plus-minus-one/how-to-use-a-firebase-function-to-handle-incoming-webhook-91760e0fcc94
-* https://cloud.google.com/dialogflow/es/docs/quick/api
-* https://medium.com/aimonks/intent-classification-generative-ai-based-application-architecture-3-79d2927537b4
+* WhatsApp API
+  * https://developers.facebook.com/blog/post/2022/10/31/sending-messages-with-whatsapp-in-your-nodejs-application/
+  * https://developers.facebook.com/docs/whatsapp/sample-app-endpoints
+  * https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/components
+  * https://developers.facebook.com/docs/whatsapp/cloud-api/messages/text-messages
+* Firebase
+  * https://medium.com/plus-minus-one/how-to-use-a-firebase-function-to-handle-incoming-webhook-91760e0fcc94
+  * https://firebase.google.com/docs/functions/get-started?hl=en&authuser=0&gen=2nd
+  * https://cloud.google.com/firestore/docs/samples/firestore-data-query
+* DialogFlow
+  * https://cloud.google.com/dialogflow/es/docs/quick/api
+* GenAI
+  * https://medium.com/aimonks/intent-classification-generative-ai-based-application-architecture-3-79d2927537b4
+  * https://js.langchain.com/v0.2/docs/tutorials/
+  * https://medium.com/@tanabee/implementing-function-calling-using-genkit-0c03f6cb9179
+  * https://firebase.google.com/docs/genkit
+  * https://firebase.google.com/docs/genkit/plugins/langchain
 
-This also saves the messages in **Firestore** in the follwoing manner:
+This also saves the messages in **Firestore** in the following manner:
 
 * Each Phone and Name combination is stored as a separate user
 * Phone and name are added as separate fields for lookups using where clause
@@ -23,8 +35,9 @@ This also saves the messages in **Firestore** in the follwoing manner:
 * Each *conversation* can have several messages added as per their timestamp
 * Each message can have a response added once response generated via
   * DialogFlow
+  * Firebase Genkit (Similar to LangChain but by Firebase)
+  * Optional TODO: LangChain (direct or via Firebase Genkit)
   * TODO: RASA
-  * TODO: LangChain
   * TODO: Embedded NLP (like https://github.com/axa-group/nlp.js)
 
 **Behaviour**
@@ -55,25 +68,29 @@ This also saves the messages in **Firestore** in the follwoing manner:
 2. NOTE you will either need to **refresh** the ACCESS_TOKEN everyday or get a Permanent token from Meta
 3. Test sending messages using
 
+   https://developers.facebook.com/apps/{some number}/whatsapp-business/wa-dev-console/?business_id={some number}
+
+   Or (see the first few commits for this as was removed later on)
+
    ```
    npm start
    ```
 
    at the root level of the project and click the button on the browser
-4. Create ngrok tunnel. See https://dashboard.ngrok.com/get-started/your-authtoken then
+5. Create ngrok tunnel. See https://dashboard.ngrok.com/get-started/your-authtoken then
 
    ```
    ngrok http 127.0.0.1:5001
    ```
-5. Add the Webhook URL (similar to https://`<some code string>`.ngrok-free.app/`<firebase app name>`/us-central1/webhook)
-6. Subcribe to "messages" webhook field
-7. Run the following
+6. Add the Webhook URL (similar to https://`<some code string>`.ngrok-free.app/`<firebase app name>`/us-central1/webhook)
+7. Subcribe to "messages" webhook field
+8. Run the following
 
    ```
    cd functions
    npm run serve
    ```
-8. You can initiate the first conversation
+9. You can initiate the first conversation
 
    * by sending a template message to the recipient phone (This is chargable by Meta)
    * recipient initiates by calling (deeplink)[https://api.whatsapp.com/send?phone=`<the business phone number>`&text=hi] (This is not charged)
