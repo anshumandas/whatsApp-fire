@@ -17,7 +17,7 @@ const dialogflow = require("@google-cloud/dialogflow");
 // Instantiates a session client
 const sessionClient = new dialogflow.SessionsClient();
 
-async function detectIntent(mobile, name, sessionId, query) {
+async function detectIntent(mobile, name, sessionId, query, echo) {
   // The path to identify the agent that owns the created intent.
   const sessionPath = sessionClient.projectAgentSessionPath(
       projectId,
@@ -37,12 +37,14 @@ async function detectIntent(mobile, name, sessionId, query) {
 
   // get context from firestore
   const contexts = fs.getContexts(mobile, name, sessionId);
+  // TODO add the echo field if using webhook instead of sync response
   if (contexts && contexts.length > 0) {
     request.queryParams = {
       contexts: contexts,
     };
   }
-
+  // NOTE: Using AWAIT means you are holding Firebase function till DialogFlow responds
+  // Better way is to add a fulfilment webhook that makes the reply
   const response = (await sessionClient.detectIntent(request))[0];
   logger.log("dialogflow response", response);
   const context = response.queryResult.outputContexts;

@@ -35,15 +35,13 @@ exports.onConversationCreated = onDocumentCreated("/phones/{mobile}/users/{name}
   }
 });
 
-exports.onMessageCreated = onDocumentCreated("/phones/{mobile}/users/{name}/conversations/{convId}/messages/{messageId}", async (event) => {
+exports.onMessageCreated = onDocumentCreated("/phones/{mobile}/users/{name}/conversations/{convId}/messages/{messageId}", (event) => {
   const newConversation = event.data.data().newConv;
   const message = event.data.data().data;
   const cid = event.params.convId;
   const name = event.params.name;
   const mobile = event.params.mobile;
-  const response = await nlp.processor(message, mobile, name, cid, newConversation);
-  const ref = await actions.respond(mobile, response);
-  return event.data.ref.set({response: ref}, {merge: true});
+  return nlp.processor(message, mobile, name, cid, newConversation, event.data.ref);
 });
 
 exports.saveResponse = function(msg) {

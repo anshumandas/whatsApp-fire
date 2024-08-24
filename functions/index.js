@@ -42,9 +42,7 @@ app.post("/", async (request, response) => {
     for (let i = 0; i < array.length; i++) {
       const body = array[i];
       logger.log("Incoming webhook", body);
-
       const changes = body.changes;
-
       for (let j = 0; j < changes.length; j++) {
         const field = changes[j].field;
         const change = changes[j].value;
