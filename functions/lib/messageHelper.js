@@ -5,7 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTextMessageInput = exports.getTemplateMessageInput = exports.sendMessage = void 0;
+exports.sendMessage = sendMessage;
+exports.getTemplateMessageInput = getTemplateMessageInput;
+exports.getTextMessageInput = getTextMessageInput;
 const axios_1 = __importDefault(require("axios"));
 function sendMessage(data) {
     const config = {
@@ -19,7 +21,6 @@ function sendMessage(data) {
     };
     return (0, axios_1.default)(config);
 }
-exports.sendMessage = sendMessage;
 function getTemplateMessageInput(recipient, template) {
     return JSON.stringify({
         "messaging_product": "whatsapp",
@@ -35,7 +36,6 @@ function getTemplateMessageInput(recipient, template) {
         },
     });
 }
-exports.getTemplateMessageInput = getTemplateMessageInput;
 // https://developers.facebook.com/docs/whatsapp/cloud-api/messages/text-messages
 function getTextMessageInput(recipient, text, enableLink = false) {
     return JSON.stringify({
@@ -50,5 +50,4 @@ function getTextMessageInput(recipient, text, enableLink = false) {
         },
     });
 }
-exports.getTextMessageInput = getTextMessageInput;
 //# sourceMappingURL=messageHelper.js.map

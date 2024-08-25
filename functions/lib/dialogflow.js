@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.detectIntent = void 0;
+exports.detectIntent = detectIntent;
 /* eslint-disable linebreak-style */
 /* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
@@ -15,7 +15,7 @@ const languageCode = "en";
 const dialogflow = require("@google-cloud/dialogflow");
 // Instantiates a session client
 const sessionClient = new dialogflow.SessionsClient();
-async function detectIntent(mobile, name, sessionId, query, echo) {
+async function detectIntent(phone, name, sessionId, query, echo) {
     // The path to identify the agent that owns the created intent.
     const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId);
     // The text query request.
@@ -30,7 +30,7 @@ async function detectIntent(mobile, name, sessionId, query, echo) {
         queryParams: {}
     };
     // get context from firestore
-    const contexts = fs.getContexts(mobile, name, sessionId);
+    const contexts = fs.getContexts(phone, name, sessionId);
     // TODO add the echo field if using webhook instead of sync response
     if (contexts && contexts.length > 0) {
         request.queryParams = {
@@ -43,9 +43,8 @@ async function detectIntent(mobile, name, sessionId, query, echo) {
     logger.log("dialogflow response", response);
     const context = response.queryResult.outputContexts;
     // save in firestore
-    fs.addContext(mobile, name, sessionId, context);
+    fs.addContext(phone, name, sessionId, context);
     return response;
 }
-exports.detectIntent = detectIntent;
 exports.default = { detectIntent };
 //# sourceMappingURL=dialogflow.js.map

@@ -23,18 +23,35 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.menuSuggestionFlow = void 0;
+exports.generalConversationFlow = void 0;
+exports.callGeneralConversationFlow = callGeneralConversationFlow;
 const z = __importStar(require("zod"));
+// import 'dotenv/config'
 // Import the Genkit core libraries and plugins.
 const ai_1 = require("@genkit-ai/ai");
 const core_1 = require("@genkit-ai/core");
+const firebase_1 = require("@genkit-ai/firebase");
+const googleai_1 = require("@genkit-ai/googleai");
+// Import models from the Google AI plugin. The Google AI API provides access to
+// several generative models. Here, we import Gemini 1.5 Flash.
+const googleai_2 = require("@genkit-ai/googleai");
 // From the Firebase plugin, import the functions needed to deploy flows using
 // Cloud Functions.
-const auth_1 = require("@genkit-ai/firebase/auth");
+// import {firebaseAuth} from "@genkit-ai/firebase/auth";
 const functions_1 = require("@genkit-ai/firebase/functions");
+const flow_1 = require("@genkit-ai/flow");
+// import {defineSecret} from "firebase-functions/params";
+const googleAIapiKey = "" + process.env.GOOGLE_GENAI_API_KEY; //defineSecret("GOOGLE_GENAI_API_KEY");
 (0, core_1.configureGenkit)({
     plugins: [
-    /* Add your plugins here. */
+        // Load the Firebase plugin, which provides integrations with several
+        // Firebase services.
+        (0, firebase_1.firebase)({ projectId: process.env.PROJECT_ID }),
+        // Load the Google AI plugin. You can optionally specify your API key
+        // by passing in a config object; if you don't, the Google AI plugin uses
+        // the value from the GOOGLE_GENAI_API_KEY environment variable, which is
+        // the recommended practice.
+        (0, googleai_1.googleAI)({ apiKey: googleAIapiKey }),
     ],
     // Log debug output to tbe console.
     logLevel: "debug",
@@ -42,28 +59,33 @@ const functions_1 = require("@genkit-ai/firebase/functions");
     enableTracingAndMetrics: true,
 });
 // Define a simple flow that prompts an LLM to generate menu suggestions.
-exports.menuSuggestionFlow = (0, functions_1.onFlow)({
-    name: "menuSuggestionFlow",
+exports.generalConversationFlow = (0, functions_1.onFlow)({
+    name: "generalConversationFlow",
+    httpsOptions: {
+        secrets: [googleAIapiKey],
+        cors: true,
+    },
     inputSchema: z.string(),
     outputSchema: z.string(),
-    authPolicy: (0, auth_1.firebaseAuth)((user) => {
-        // By default, the firebaseAuth policy requires that all requests have an
-        // `Authorization: Bearer` header containing the user's Firebase
-        // Authentication ID token. All other requests are rejected with error
-        // 403. If your app client uses the Cloud Functions for Firebase callable
-        // functions feature, the library automatically attaches this header to
-        // requests.
-        // You should also set additional policy requirements as appropriate for
-        // your app. For example:
-        // if (!user.email_verified) {
-        //   throw new Error("Verified email required to run flow");
-        // }
-    }),
+    authPolicy: (0, functions_1.noAuth)(), // WARNING: noAuth() creates an open endpoint!
+    // authPolicy: firebaseAuth((user) => {
+    // By default, the firebaseAuth policy requires that all requests have an
+    // `Authorization: Bearer` header containing the user's Firebase
+    // Authentication ID token. All other requests are rejected with error
+    // 403. If your app client uses the Cloud Functions for Firebase callable
+    // functions feature, the library automatically attaches this header to
+    // requests.
+    // You should also set additional policy requirements as appropriate for
+    // your app. For example:
+    // if (!user.email_verified) {
+    //   throw new Error("Verified email required to run flow");
+    // }
+    // }),
 }, async (subject) => {
     // Construct a request and send it to the model API.
-    const prompt = `Suggest an item for the menu of a ${subject} themed restaurant`;
+    const prompt = `Reply to the user as a chatbot when user said ${subject}`;
     const llmResponse = await (0, ai_1.generate)({
-        model: '' /* TODO: Set a model. */,
+        model: googleai_2.gemini15Flash,
         prompt: prompt,
         config: {
             temperature: 1,
@@ -75,4 +97,9 @@ exports.menuSuggestionFlow = (0, functions_1.onFlow)({
     // LLM call, etc.
     return llmResponse.text();
 });
+async function callGeneralConversationFlow(theme) {
+    const flowResponse = await (0, flow_1.runFlow)(exports.generalConversationFlow, theme);
+    console.log(flowResponse);
+    return flowResponse;
+}
 //# sourceMappingURL=genkit.js.map

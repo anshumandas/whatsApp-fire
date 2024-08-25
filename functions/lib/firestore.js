@@ -34,13 +34,14 @@ exports.onConversationCreated = (0, firestore_1.onDocumentCreated)("/phones/{mob
         const ref = await actions_1.default.respond(mobile, response);
     }
 });
-exports.onMessageCreated = (0, firestore_1.onDocumentCreated)("/phones/{mobile}/users/{name}/conversations/{convId}/messages/{messageId}", (event) => {
+exports.onMessageCreated = (0, firestore_1.onDocumentCreated)("/phones/{mobile}/users/{name}/conversations/{convId}/messages/{messageId}", async (event) => {
     const newConversation = event.data.data().newConv;
     const message = event.data.data().data;
     const cid = event.params.convId;
     const name = event.params.name;
     const mobile = event.params.mobile;
-    return nlp_1.default.processor(message, mobile, name, cid, newConversation, event.data.ref);
+    const r = await nlp_1.default.processor(message, mobile, name, cid, newConversation, event.data.ref);
+    return r;
 });
 exports.saveResponse = function (msg) {
     (0, firestore_2.getFirestore)().collection("phones").doc(msg.recipient_id).collection("responses").doc(msg.id).set({ status: msg.status }, { merge: true });
@@ -65,13 +66,13 @@ exports.addMessage = async function (message, senderName) {
     const doc = await conv.collection("messages").doc(message.timestamp);
     await doc.set({ data: message.text.body, newConv: convStart });
 };
-exports.getContexts = async function (mobile, name, sessionId) {
-    const ret = await (0, firestore_2.getFirestore)().collection("phones").doc(mobile).collection("users").
+exports.getContexts = async function (phone, name, sessionId) {
+    const ret = await (0, firestore_2.getFirestore)().collection("phones").doc("" + phone).collection("users").
         doc(name).collection("conversations").doc(sessionId).get();
     return ret.context;
 };
-exports.addContext = async function (mobile, name, sessionId, context) {
-    await (0, firestore_2.getFirestore)().collection("phones").doc(mobile).collection("users").
+exports.addContext = async function (phone, name, sessionId, context) {
+    await (0, firestore_2.getFirestore)().collection("phones").doc("" + phone).collection("users").
         doc(name).collection("conversations").doc(sessionId).set({ context }, { merge: true });
 };
 exports.default = exports;

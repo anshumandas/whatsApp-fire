@@ -61,6 +61,8 @@ This also saves the messages in **Firestore** in the following manner:
 5. Add Dialogflow
    * Create Dialogflow project, Intents etc. https://cloud.google.com/dialogflow/es/docs/quick/setup
    * Enable API for Dialogflow and Firebase projects from each of their settings
+6. Convert to Typescript (Note that Emulator does not watch TS and only JS. See https://github.com/firebase/firebase-tools/issues/4691 and the solution I suggested in the end)
+7. Add Genkit. See https://firebase.google.com/docs/genkit/nextjs and instead of NextJS use Firebase functions to call
 
 **Run using Emulator**
 
@@ -77,20 +79,20 @@ This also saves the messages in **Firestore** in the following manner:
    ```
 
    at the root level of the project and click the button on the browser
-5. Create ngrok tunnel. See https://dashboard.ngrok.com/get-started/your-authtoken then
+4. Create ngrok tunnel. See https://dashboard.ngrok.com/get-started/your-authtoken then
 
    ```
    ngrok http 127.0.0.1:5001
    ```
-6. Add the Webhook URL (similar to https://`<some code string>`.ngrok-free.app/`<firebase app name>`/us-central1/webhook)
-7. Subcribe to "messages" webhook field
-8. Run the following
+5. Add the Webhook URL (similar to https://`<some code string>`.ngrok-free.app/`<firebase app name>`/us-central1/webhook)
+6. Subcribe to "messages" webhook field
+7. Run the following
 
    ```
    cd functions
    npm run serve
    ```
-9. You can initiate the first conversation
+8. You can initiate the first conversation
 
    * by sending a template message to the recipient phone (This is chargable by Meta)
    * recipient initiates by calling (deeplink)[https://api.whatsapp.com/send?phone=`<the business phone number>`&text=hi] (This is not charged)
@@ -102,7 +104,7 @@ This also saves the messages in **Firestore** in the following manner:
    * Langchain and use RAG https://medium.com/@talon8080/mastering-rag-chatbots-building-advanced-rag-as-a-conversational-ai-tool-with-langchain-d740493ff328
 2. Use personal number instead of business account by leveraging https://github.com/pedroslopez/whatsapp-web.js
 3. Use other service providers for the time consuming OpenAI etc calls to save money in production. See https://medium.com/@raphox/integrating-google-firebase-firestore-with-chatgpt-api-saving-money-a90148e619b9
-4. Convert to Typescript
+4. Improve Typescript by creating classes etc.
    * Take inspiration from https://gist.github.com/jakebloom/2d8468229eb40b99b72e039fd2150831
    * We can use https://github.com/Secreto31126/whatsapp-api-js for Typescript library to call WhatsApp Business API in a more structural manner.
    * WhatsApp's own SDK https://github.com/WhatsApp/WhatsApp-Nodejs-SDK is archived
